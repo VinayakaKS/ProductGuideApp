@@ -1,16 +1,12 @@
 # product_guide
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+In our busy day to day lives we often tend to neglect and overlook the ingredients used in a
+product. There are many products in various categories like food products, cosmetics and
+much more, many harmful chemicals are used hidden under coded format which is difficult
+to understand for a layman. These harmful products are known to have various effects on the
+human body on prolonged usage. Hence the proposed solution asks for a photo of the
+ingredients section of the product and provides the user with the recommendation either to
+buy (use) the product or not. The solution is implemented using an OCR engine to get the
+text from scanned photos and a comparison script which is run in a backend server. The
+frontend app is developed using flutter and dart. The list of harmful ingredients is
+based in accordance with the Global entities like EU, WHO, JECFA.
