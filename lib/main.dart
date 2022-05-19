@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  const MyApp({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -183,28 +185,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Get from gallery
   _getFromGallery() async {
-    PickedFile pickedFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
+    XFile image1 = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image1 != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
+        imageFile = File(image1.path);
       });
     }
   }
 
   /// Get from Camera
   _getFromCamera() async {
-    PickedFile pickedFile = await ImagePicker().getImage(
-      source: ImageSource.camera,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
+    XFile image1 = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image1 != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
+        imageFile = File(image1.path);
       });
     }
   }
