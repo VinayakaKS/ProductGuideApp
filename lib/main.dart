@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,42 +62,87 @@ class _MyHomePageState extends State<MyHomePage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    alignment: Alignment.bottomRight,
+                    alignment: Alignment.center,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Center(
+                        Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.amber[600],
+                            ),
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.all(20.0),
                             child: Text(
-                                'Do those hard-to-pronounce ingredients terrify you?\nSimply scan your Products Ingredients list\n And you will find that each ingredient is provided a rating\n Making it incredibly easy to figure out if a product is potentially good or bad for you.\n  ',
+                                'Are you safe with these ingredients in your product,\n Scan and know rightaway',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w900,
+                                    fontWeight: FontWeight.bold,
                                     fontFamily: 'Raleway'))),
-                        ElevatedButton(
-                          onPressed: () {
-                            _getFromGallery();
-                          },
-                          child: Icon(Icons.photo, size: 40),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.amberAccent,
-                              onPrimary: Colors.black,
-                              padding: EdgeInsets.all(8.0)),
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.amber[600],
+                              ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          padding: EdgeInsets.all(10.0),
+                          margin: EdgeInsets.all(20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _getFromGallery();
+                                },
+                                child: Icon(Icons.photo, size: 30),
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.amberAccent,
+                                    onPrimary: Colors.black,
+                                    padding: EdgeInsets.all(8.0)),
+                              ),
+                              Text('  Choose photo from Gallery',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontStyle: FontStyle.normal,
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily: 'Raleway'))
+                            ],
+                          ),
                         ),
                         Container(
-                          height: 20.0,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            _getFromCamera();
-                          },
-                          child: Icon(Icons.camera_enhance_outlined, size: 40),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.amberAccent,
-                              onPrimary: Colors.black,
-                              padding: EdgeInsets.all(8.0)),
-                        )
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.amber[600],
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.all(20.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _getFromCamera();
+                                  },
+                                  child: Icon(Icons.camera_enhance_outlined,
+                                      size: 30),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.amberAccent,
+                                      onPrimary: Colors.black,
+                                      padding: EdgeInsets.all(8.0)),
+                                ),
+                                Text('  Take photo from camera',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily: 'Raleway'))
+                              ],
+                            )),
                       ],
                     ),
                   )
@@ -189,6 +237,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (image1 != null) {
       setState(() {
         imageFile = File(image1.path);
+        final bytes = File(image1.path).readAsBytesSync();
+        String image_string = base64Encode(bytes);
       });
     }
   }
@@ -199,12 +249,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (image1 != null) {
       setState(() {
         imageFile = File(image1.path);
+        final bytes = File(image1.path).readAsBytesSync();
+        String image_string = base64Encode(bytes);
       });
     }
   }
-}
 
-// in container at last
-// Image.file(
-//                    imageFile,
-//                    fit: BoxFit.cover,
+  static String _encodeimage(Uint8List data) {
+    return base64Encode(data);
+  }
+}
