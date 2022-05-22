@@ -1,17 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'model.dart';
+import 'repository.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,16 +26,19 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
-
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  File imageFile;
+  static final List<String> _ingredients = [];
+  int itemcount = 0;
+  late File imageFile;
+  late String image_string;
+  Future<data>? _dataModel;
   int toxic = 0;
 
   /// Widget
@@ -54,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.amber[600],
         ),
         body: Container(
-            child: imageFile == null
+            child: (_dataModel == null)
                 ? Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -84,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Container(
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: Colors.amber[600],
+                                color: Colors.amber,
                               ),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20))),
@@ -115,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Container(
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.amber[600],
+                                  color: Colors.amber,
                                 ),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20))),
@@ -143,119 +147,156 @@ class _MyHomePageState extends State<MyHomePage> {
                                         fontFamily: 'Raleway'))
                               ],
                             )),
+                        ElevatedButton(
+                            onPressed: () async {
+                              setState(() {
+                                _dataModel = getData(image_string);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.amberAccent,
+                                onPrimary: Colors.black,
+                                padding: EdgeInsets.all(8.0)),
+                            child: Text("Submit"))
                       ],
                     ),
                   )
-                : Center(
-                    child: (toxic == 1)
-                        ? Container(
-                            decoration: BoxDecoration(
-                                color: Colors.red[100],
-                                border: Border.all(color: Colors.red[500]),
-                                borderRadius: BorderRadius.circular(30)),
-                            height: 150,
-                            width: 150,
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.cancel_outlined,
-                                  size: 50,
-                                  color: Colors.red[700],
-                                ),
-                                RichText(
-                                    text: TextSpan(
-                                        style: TextStyle(
-                                            fontSize: 25, color: Colors.black),
-                                        children: [
-                                      TextSpan(
-                                          text: "Not",
-                                          style: TextStyle(
-                                              fontFamily: 'FjallaOne',
-                                              fontSize: 30,
-                                              fontStyle: FontStyle.normal,
-                                              color: Colors.red[500])),
-                                      TextSpan(
-                                        text: " Safe",
-                                      )
-                                    ])),
-                              ],
-                            ))
-                        // : Column(children: <Widget>[
-                        // Text(
-                        //   "Since these (chemicals) are presesnt in the ingredients,",
-                        //   style: TextStyle(
-                        //     fontSize: 20,
-                        //     fontStyle: FontStyle.normal,
-                        //     fontWeight: FontWeight.w900,
-                        //     fontFamily: 'Raleway',
-                        //     color: Colors.black,
-                        //   ),
-                        // ),
-                        : Container(
-                            decoration: BoxDecoration(
-                                color: Colors.green[100],
-                                border: Border.all(color: Colors.green[500]),
-                                borderRadius: BorderRadius.circular(30)),
-                            height: 150,
-                            width: 150,
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  size: 50,
-                                  color: Colors.green[700],
-                                ),
-                                RichText(
-                                    text: TextSpan(
-                                        style: TextStyle(
-                                            fontSize: 25, color: Colors.black),
-                                        children: [
-                                      TextSpan(text: "Safe to"),
-                                      TextSpan(
-                                          text: " Buy",
-                                          style: TextStyle(
-                                              fontFamily: 'FjallaOne',
-                                              fontSize: 30,
-                                              fontStyle: FontStyle.normal,
-                                              color: Colors.green[500]))
-                                    ])),
-                              ],
-                            ))
-                    //]
-                    ))
-        //)
-        );
+                : buildforrec()));
+  }
+
+  FutureBuilder<data> buildforrec() {
+    return FutureBuilder<data>(
+        future: _dataModel,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            // _ingredients.add(snapshot.data!.recommendation);
+            itemcount = snapshot.data!.toxic.length;
+            for (var i = 0; i < itemcount; i++) {
+              _ingredients.add(snapshot.data!.toxic[i]);
+            }
+            return ListView.builder(
+                itemCount: itemcount,
+                itemBuilder: (context, j) {
+                  return Card(
+                    margin: const EdgeInsets.all(12.0),
+                    elevation: 5.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: ListTile(
+                        title: Text(_ingredients[j]),
+                        dense: true,
+                      ),
+                    ),
+                  );
+                });
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+
+          return const CircularProgressIndicator();
+        });
   }
 
   /// Get from gallery
   _getFromGallery() async {
-    XFile image1 = await ImagePicker().pickImage(source: ImageSource.gallery);
+    XFile? image1 = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image1 != null) {
       setState(() {
         imageFile = File(image1.path);
         final bytes = File(image1.path).readAsBytesSync();
-        String image_string = base64Encode(bytes);
+        image_string = base64Encode(bytes);
       });
     }
   }
 
   /// Get from Camera
   _getFromCamera() async {
-    XFile image1 = await ImagePicker().pickImage(source: ImageSource.camera);
+    XFile? image1 = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image1 != null) {
       setState(() {
         imageFile = File(image1.path);
         final bytes = File(image1.path).readAsBytesSync();
-        String image_string = base64Encode(bytes);
+        image_string = base64Encode(bytes);
       });
     }
   }
-
-  static String _encodeimage(Uint8List data) {
-    return base64Encode(data);
-  }
 }
+
+  // static String _encodeimage(Uint8List data) {
+  //   return base64Encode(data);
+  // }
+
+
+// : Center(
+                //     child: (toxic == 1)
+                    //     ? Container(
+                    //         decoration: BoxDecoration(
+                    //             color: Colors.red[100],
+                    //             border: Border.all(color: Colors.red),
+                    //             borderRadius: BorderRadius.circular(30)),
+                    //         height: 150,
+                    //         width: 150,
+                    //         alignment: Alignment.center,
+                    //         child: Column(
+                    //           mainAxisAlignment: MainAxisAlignment.center,
+                    //           children: <Widget>[
+                    //             Icon(
+                    //               Icons.cancel_outlined,
+                    //               size: 50,
+                    //               color: Colors.red[700],
+                    //             ),
+                    //             RichText(
+                    //                 text: TextSpan(
+                    //                     style: TextStyle(
+                    //                         fontSize: 25, color: Colors.black),
+                    //                     children: [
+                    //                   TextSpan(
+                    //                       text: "Not",
+                    //                       style: TextStyle(
+                    //                           fontFamily: 'FjallaOne',
+                    //                           fontSize: 30,
+                    //                           fontStyle: FontStyle.normal,
+                    //                           color: Colors.red[500])),
+                    //                   TextSpan(
+                    //                     text: " Safe",
+                    //                   )
+                    //                 ])),
+                    //           ],
+                    //         ))
+                    //     : Container(
+                    //         decoration: BoxDecoration(
+                    //             color: Colors.green[100],
+                    //             border: Border.all(color: Colors.green),
+                    //             borderRadius: BorderRadius.circular(30)),
+                    //         height: 150,
+                    //         width: 150,
+                    //         alignment: Alignment.center,
+                    //         child: Column(
+                    //           mainAxisAlignment: MainAxisAlignment.center,
+                    //           children: <Widget>[
+                    //             Icon(
+                    //               Icons.check_circle_outline,
+                    //               size: 50,
+                    //               color: Colors.green[700],
+                    //             ),
+                    //             RichText(
+                    //                 text: TextSpan(
+                    //                     style: TextStyle(
+                    //                         fontSize: 25, color: Colors.black),
+                    //                     children: [
+                    //                   TextSpan(text: "Safe to"),
+                    //                   TextSpan(
+                    //                       text: " Buy",
+                    //                       style: TextStyle(
+                    //                           fontFamily: 'FjallaOne',
+                    //                           fontSize: 30,
+                    //                           fontStyle: FontStyle.normal,
+                    //                           color: Colors.green[500]))
+                    //                 ])),
+                    //           ],
+                    //         ))
+                    // //]
+                    // ))
+        //)
