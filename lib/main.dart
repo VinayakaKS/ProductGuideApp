@@ -16,11 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Product Recommender App',
+      title: 'Product Guide App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Product Recommender'),
+      home: MyHomePage(title: 'Product Guide'),
     );
   }
 }
@@ -39,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late File imageFile;
   late String image_string;
   Future<data>? _dataModel;
-  int toxic = 0;
 
   /// Widget
   @override
@@ -174,28 +173,68 @@ class _MyHomePageState extends State<MyHomePage> {
             for (var i = 0; i < itemcount; i++) {
               _ingredients.add(snapshot.data!.toxic[i]);
             }
-            return ListView.builder(
-                itemCount: itemcount,
-                itemBuilder: (context, j) {
-                  return Card(
-                    margin: const EdgeInsets.all(12.0),
-                    elevation: 5.0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: ListTile(
-                        title: Text(_ingredients[j]),
-                        dense: true,
+            if (itemcount == 0) {
+              return Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/safetext.JPG'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            } else {
+              return ListView.builder(
+                  itemCount: itemcount,
+                  itemBuilder: (context, j) {
+                    return Card(
+                      margin: const EdgeInsets.all(12.0),
+                      elevation: 5.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: ListTile(
+                          title: Text(_ingredients[j]),
+                          dense: true,
+                        ),
+                      ),
+                    );
+                  });
+            }
+          } else if (snapshot.hasError) {
+            return Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.red,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                padding: EdgeInsets.all(10.0),
+                margin: EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.redAccent,
+                      ),
+                      padding: EdgeInsets.all(10.0),
+                      margin: EdgeInsets.all(20.0),
+                      child: Text(
+                        "OOps",
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
-                  );
-                });
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
+                    Text('${snapshot.error}'),
+                  ],
+                ));
           }
 
-          return const CircularProgressIndicator();
+          return Center(
+              child: const CircularProgressIndicator(
+            color: Colors.amber,
+          ));
         });
   }
 

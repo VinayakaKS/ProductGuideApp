@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<data> getData(String imageString) async {
-  final response = await http.post(Uri.parse('http://10.20.22.200:5000/'),
+  final response = await http.post(Uri.parse('http://10.20.24.68:5000/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8'
       },
