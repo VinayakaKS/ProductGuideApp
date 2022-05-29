@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:flutter_image_picker_2/safe_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Product Guide App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/',
       routes: {
@@ -52,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: NewGradientAppBar(
           title: Text("PRODUCT GUIDE",
               style: TextStyle(
                 fontSize: 30,
@@ -62,7 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.white,
               )),
           centerTitle: true,
-          backgroundColor: Colors.amber[600],
+          gradient: LinearGradient(
+            colors: const [
+              Colors.amber,
+              Colors.yellow,
+            ],
+          ),
         ),
         body: Container(
             child: (_dataModel == null)
@@ -87,25 +94,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                           _dataModel = getData(image_string);
                                         });
                                       },
-                                      label: Text("Upload",
+                                      label: Text("Upload now",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                              fontSize: 25,
+                                              fontSize: 20,
                                               fontStyle: FontStyle.normal,
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'Raleway')),
                                       boxShadow: BoxShadow(
-                                        color: Colors.orange,
+                                        color: Colors.amber,
                                         blurRadius: 4,
                                       ),
                                       icon: Icon(Icons.cloud_upload_outlined),
                                       buttonColor: Colors.white,
-                                      backgroundColor: Colors.amber,
+                                      backgroundColor: Colors.orangeAccent,
                                       highlightedColor: Colors.white,
                                       baseColor: Colors.black,
                                     ),
                                     Container(
-                                      height: 50.0,
+                                      height: 60.0,
                                     )
                                   ])
                             ]
@@ -113,9 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               Container(
                                   alignment: Alignment.bottomCenter,
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.amber,
-                                  ),
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: const [
+                                          Colors.amber,
+                                          Colors.deepOrange,
+                                        ],
+                                      )),
                                   padding: EdgeInsets.all(10.0),
                                   margin: EdgeInsets.all(20.0),
                                   child: Text(
@@ -126,28 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                           fontStyle: FontStyle.normal,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Raleway'))),
-                              SliderButton(
-                                action: () {
-                                  _getFromGallery();
-                                },
-                                label: Text("From Gallery",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontStyle: FontStyle.normal,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Raleway')),
-                                boxShadow: BoxShadow(
-                                  color: Colors.orange,
-                                  blurRadius: 4,
-                                ),
-                                icon: Icon(Icons.photo),
-                                buttonColor: Colors.white,
-                                backgroundColor: Colors.orangeAccent,
-                                highlightedColor: Colors.white,
-                                baseColor: Colors.black,
-                              ),
-                              Container(height: 20.0),
                               SliderButton(
                                 action: () {
                                   _getFromCamera();
@@ -166,6 +155,28 @@ class _MyHomePageState extends State<MyHomePage> {
                                 icon: Icon(Icons.camera_enhance_outlined),
                                 buttonColor: Colors.white,
                                 backgroundColor: Colors.amber,
+                                highlightedColor: Colors.white,
+                                baseColor: Colors.black,
+                              ),
+                              Container(height: 20.0),
+                              SliderButton(
+                                action: () {
+                                  _getFromGallery();
+                                },
+                                label: Text("From Gallery",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Raleway')),
+                                boxShadow: BoxShadow(
+                                  color: Colors.amber,
+                                  blurRadius: 4,
+                                ),
+                                icon: Icon(Icons.photo),
+                                buttonColor: Colors.white,
+                                backgroundColor: Colors.orangeAccent,
                                 highlightedColor: Colors.white,
                                 baseColor: Colors.black,
                               ),
@@ -236,9 +247,10 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           } else if (snapshot.hasError) {
             return Container(
+                height: 250,
                 decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.red,
+                      color: Colors.red.shade700,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 padding: EdgeInsets.all(10.0),
@@ -246,20 +258,32 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   children: [
                     Container(
+                      alignment: Alignment.center,
+                      height: 110,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.redAccent,
-                      ),
+                          shape: BoxShape.circle,
+                          // color: Colors.redAccent,
+                          gradient: LinearGradient(
+                            colors: const [
+                              Colors.red,
+                              Colors.white,
+                            ],
+                          )),
                       padding: EdgeInsets.all(10.0),
                       margin: EdgeInsets.all(20.0),
                       child: Text(
-                        "OOps",
+                        "           OOps \n An error occured",
                         style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                        ),
+                            fontStyle: FontStyle.normal,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Text('${snapshot.error}'),
+                    Text(
+                      '${snapshot.error}',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                   ],
                 ));
           }
