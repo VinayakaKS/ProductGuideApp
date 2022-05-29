@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
+import 'package:slider_button/slider_button.dart';
 import 'package:flutter_image_picker_2/safe_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'model.dart';
@@ -78,111 +78,105 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: (image_entity == 1)
                           ? <Widget>[
-                              Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.amber[600],
-                                  ),
-                                  padding: EdgeInsets.all(10.0),
-                                  margin: EdgeInsets.all(20.0),
-                                  child: ElevatedButton(
-                                      onPressed: () async {
+                              Column(
+                                  // Slide button for submit
+                                  children: [
+                                    SliderButton(
+                                      action: () async {
                                         setState(() {
                                           _dataModel = getData(image_string);
                                         });
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.amberAccent,
-                                          onPrimary: Colors.black,
-                                          padding: EdgeInsets.all(8.0)),
-                                      child: Text("Submit")))
+                                      label: Text("Upload",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontStyle: FontStyle.normal,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Raleway')),
+                                      boxShadow: BoxShadow(
+                                        color: Colors.orange,
+                                        blurRadius: 4,
+                                      ),
+                                      icon: Icon(Icons.cloud_upload_outlined),
+                                      buttonColor: Colors.white,
+                                      backgroundColor: Colors.amber,
+                                      highlightedColor: Colors.white,
+                                      baseColor: Colors.black,
+                                    ),
+                                    Container(
+                                      height: 50.0,
+                                    )
+                                  ])
                             ]
                           : <Widget>[
                               Container(
+                                  alignment: Alignment.bottomCenter,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.amber[600],
+                                    color: Colors.amber,
                                   ),
                                   padding: EdgeInsets.all(10.0),
                                   margin: EdgeInsets.all(20.0),
                                   child: Text(
-                                      'Are you safe with these ingredients in your product,\n Scan and know rightaway',
+                                      'Are you safe with these ingredients in your product?\n Scan and know rightaway',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 23,
                                           fontStyle: FontStyle.normal,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'Raleway'))),
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.amber,
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                padding: EdgeInsets.all(10.0),
-                                margin: EdgeInsets.all(20.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        _getFromGallery();
-                                      },
-                                      child: Icon(Icons.photo, size: 30),
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.amberAccent,
-                                          onPrimary: Colors.black,
-                                          padding: EdgeInsets.all(8.0)),
-                                    ),
-                                    Text('  Choose photo from Gallery',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontStyle: FontStyle.normal,
-                                            fontWeight: FontWeight.w900,
-                                            fontFamily: 'Raleway'))
-                                  ],
+                              SliderButton(
+                                action: () {
+                                  _getFromGallery();
+                                },
+                                label: Text("From Gallery",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Raleway')),
+                                boxShadow: BoxShadow(
+                                  color: Colors.orange,
+                                  blurRadius: 4,
                                 ),
+                                icon: Icon(Icons.photo),
+                                buttonColor: Colors.white,
+                                backgroundColor: Colors.orangeAccent,
+                                highlightedColor: Colors.white,
+                                baseColor: Colors.black,
                               ),
-                              Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.amber,
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                  padding: EdgeInsets.all(10.0),
-                                  margin: EdgeInsets.all(20.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _getFromCamera();
-                                        },
-                                        child: Icon(
-                                            Icons.camera_enhance_outlined,
-                                            size: 30),
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.amberAccent,
-                                            onPrimary: Colors.black,
-                                            padding: EdgeInsets.all(8.0)),
-                                      ),
-                                      Text('  Take photo from camera',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontStyle: FontStyle.normal,
-                                              fontWeight: FontWeight.w900,
-                                              fontFamily: 'Raleway'))
-                                    ],
-                                  )),
+                              Container(height: 20.0),
+                              SliderButton(
+                                action: () {
+                                  _getFromCamera();
+                                },
+                                label: Text("From Camera",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Raleway')),
+                                boxShadow: BoxShadow(
+                                  color: Colors.orange,
+                                  blurRadius: 4,
+                                ),
+                                icon: Icon(Icons.camera_enhance_outlined),
+                                buttonColor: Colors.white,
+                                backgroundColor: Colors.amber,
+                                highlightedColor: Colors.white,
+                                baseColor: Colors.black,
+                              ),
+                              Container(height: 20.0),
                             ],
                     ),
                   )
                 : buildforrec()));
   }
 
+  //Next screen for the future
   FutureBuilder<data> buildforrec() {
     return FutureBuilder<data>(
         future: _dataModel,
