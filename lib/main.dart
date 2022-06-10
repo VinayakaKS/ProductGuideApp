@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'model.dart';
 import 'safe_screen.dart';
 import 'repository.dart';
+import 'AllergyAssistance.dart';
 
 void main() => runApp(const MyApp());
 
@@ -48,6 +49,9 @@ class _MyHomePageState extends State<MyHomePage> {
   late File imageFile;
   late String image_string;
   late int image_entity = 0;
+  late int _currentIndex = 0;
+  final TextEditingController _textFieldController = TextEditingController();
+  final List<Allergen> _allergens = <Allergen>[];
   Future<data>? _dataModel;
 
   /// Widget
@@ -73,118 +77,177 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Container(
             child: (_dataModel == null)
-                ? Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/bg.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: (image_entity == 1)
-                          ? <Widget>[
-                              Column(
-                                  // Slide button for submit
-                                  children: [
-                                    SliderButton(
-                                      action: () async {
-                                        setState(() {
-                                          _dataModel = getData(image_string);
-                                        });
-                                      },
-                                      label: Text("Upload now",
+                ? (_currentIndex == 2)
+                    //Allergy assistance screen
+                    ? Container(
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: SizedBox(
+                                    height: 500,
+                                    child: ListView(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      children:
+                                          _allergens.map((Allergen allergen) {
+                                        return AllergensItem(
+                                          allergens: allergen,
+                                          onAListChanged: _handleAListChange,
+                                        );
+                                      }).toList(),
+                                    ))),
+                            Container(
+                              alignment: Alignment.bottomRight,
+                              padding: EdgeInsets.all(20),
+                              child: FloatingActionButton(
+                                  onPressed: () => _displayDialog(),
+                                  backgroundColor: Colors.orange,
+                                  tooltip: 'Add Item',
+                                  child: const Icon(Icons.add)),
+                            )
+                          ],
+                        ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/bg.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: (image_entity == 1)
+                              ? <Widget>[
+                                  Column(
+                                      // Slide button for submit
+                                      children: [
+                                        SliderButton(
+                                          action: () async {
+                                            setState(() {
+                                              _dataModel = getData(
+                                                  image_string, _currentIndex);
+                                            });
+                                          },
+                                          label: Text("Upload now",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Raleway')),
+                                          boxShadow: BoxShadow(
+                                            color: Colors.amber,
+                                            blurRadius: 4,
+                                          ),
+                                          icon:
+                                              Icon(Icons.cloud_upload_outlined),
+                                          buttonColor: Colors.white,
+                                          backgroundColor: Colors.orangeAccent,
+                                          highlightedColor: Colors.white,
+                                          baseColor: Colors.black,
+                                        ),
+                                        Container(
+                                          height: 60.0,
+                                        )
+                                      ])
+                                ]
+                              : <Widget>[
+                                  Container(
+                                      alignment: Alignment.bottomCenter,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: LinearGradient(
+                                            colors: const [
+                                              Colors.amber,
+                                              Colors.deepOrange,
+                                            ],
+                                          )),
+                                      padding: EdgeInsets.all(10.0),
+                                      margin: EdgeInsets.all(20.0),
+                                      child: Text(
+                                          'Are you safe with these ingredients in your product?\n Scan and know rightaway',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                              fontSize: 20,
+                                              fontSize: 23,
                                               fontStyle: FontStyle.normal,
                                               fontWeight: FontWeight.bold,
-                                              fontFamily: 'Raleway')),
-                                      boxShadow: BoxShadow(
-                                        color: Colors.amber,
-                                        blurRadius: 4,
-                                      ),
-                                      icon: Icon(Icons.cloud_upload_outlined),
-                                      buttonColor: Colors.white,
-                                      backgroundColor: Colors.orangeAccent,
-                                      highlightedColor: Colors.white,
-                                      baseColor: Colors.black,
+                                              fontFamily: 'Raleway'))),
+                                  SliderButton(
+                                    action: () {
+                                      _getFromCamera();
+                                    },
+                                    label: Text("From Camera",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontStyle: FontStyle.normal,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Raleway')),
+                                    boxShadow: BoxShadow(
+                                      color: Colors.orange,
+                                      blurRadius: 4,
                                     ),
-                                    Container(
-                                      height: 60.0,
-                                    )
-                                  ])
-                            ]
-                          : <Widget>[
-                              Container(
-                                  alignment: Alignment.bottomCenter,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(
-                                        colors: const [
-                                          Colors.amber,
-                                          Colors.deepOrange,
-                                        ],
-                                      )),
-                                  padding: EdgeInsets.all(10.0),
-                                  margin: EdgeInsets.all(20.0),
-                                  child: Text(
-                                      'Are you safe with these ingredients in your product?\n Scan and know rightaway',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 23,
-                                          fontStyle: FontStyle.normal,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Raleway'))),
-                              SliderButton(
-                                action: () {
-                                  _getFromCamera();
-                                },
-                                label: Text("From Camera",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontStyle: FontStyle.normal,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Raleway')),
-                                boxShadow: BoxShadow(
-                                  color: Colors.orange,
-                                  blurRadius: 4,
-                                ),
-                                icon: Icon(Icons.camera_enhance_outlined),
-                                buttonColor: Colors.white,
-                                backgroundColor: Colors.amber,
-                                highlightedColor: Colors.white,
-                                baseColor: Colors.black,
-                              ),
-                              Container(height: 20.0),
-                              SliderButton(
-                                action: () {
-                                  _getFromGallery();
-                                },
-                                label: Text("From Gallery",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontStyle: FontStyle.normal,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Raleway')),
-                                boxShadow: BoxShadow(
-                                  color: Colors.amber,
-                                  blurRadius: 4,
-                                ),
-                                icon: Icon(Icons.photo),
-                                buttonColor: Colors.white,
-                                backgroundColor: Colors.orangeAccent,
-                                highlightedColor: Colors.white,
-                                baseColor: Colors.black,
-                              ),
-                              Container(height: 20.0),
-                            ],
-                    ),
-                  )
-                : buildforrec()));
+                                    icon: Icon(Icons.camera_enhance_outlined),
+                                    buttonColor: Colors.white,
+                                    backgroundColor: Colors.amber,
+                                    highlightedColor: Colors.white,
+                                    baseColor: Colors.black,
+                                  ),
+                                  Container(height: 20.0),
+                                  SliderButton(
+                                    action: () {
+                                      _getFromGallery();
+                                    },
+                                    label: Text("From Gallery",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontStyle: FontStyle.normal,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Raleway')),
+                                    boxShadow: BoxShadow(
+                                      color: Colors.amber,
+                                      blurRadius: 4,
+                                    ),
+                                    icon: Icon(Icons.photo),
+                                    buttonColor: Colors.white,
+                                    backgroundColor: Colors.orangeAccent,
+                                    highlightedColor: Colors.white,
+                                    baseColor: Colors.black,
+                                  ),
+                                  Container(height: 20.0),
+                                ],
+                        ),
+                      )
+                : buildforrec()),
+        bottomNavigationBar: BottomNavigationBar(
+            // backgroundColor: Colors.amber,
+            currentIndex: _currentIndex,
+            selectedItemColor: Colors.orange,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.restaurant_rounded),
+                  backgroundColor: Colors.deepOrange,
+                  label: 'Food products'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.face_retouching_natural),
+                backgroundColor: Colors.deepOrange,
+                label: 'Cosmetics',
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.add),
+                  backgroundColor: Colors.deepOrange,
+                  label: 'Allergens'),
+            ],
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+                // print(_currentIndex);
+              });
+            }));
   }
 
   //Next screen for the future
@@ -320,4 +383,45 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
   }
+
+  //Allergy asistace builder screen
+  Future<void> _displayDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add a new allergen item'),
+          content: TextField(
+            controller: _textFieldController,
+            decoration:
+                const InputDecoration(hintText: 'Type your new allergen'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addAllergen(_textFieldController.text);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addAllergen(String name) {
+    setState(() {
+      _allergens.add(Allergen(name: name, checked: false));
+    });
+    _textFieldController.clear();
+  }
+
+  void _handleAListChange(Allergen allergen) {
+    setState(() {
+      allergen.checked = !allergen.checked;
+    });
+  } // Other functions
+
 }
