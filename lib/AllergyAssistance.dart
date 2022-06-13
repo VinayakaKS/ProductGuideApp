@@ -26,6 +26,10 @@ class AllergensItem extends StatelessWidget {
     );
   }
 
+  _sendAllergens() {
+    return allergens.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -37,7 +41,7 @@ class AllergensItem extends StatelessWidget {
           allergens.name[0].toUpperCase(),
           style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.orangeAccent,
       ),
       title: Text(allergens.name, style: _getTextStyle(allergens.checked)),
     );

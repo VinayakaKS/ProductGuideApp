@@ -8,12 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:flutter_image_picker_2/safe_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get_storage/get_storage.dart';
 import 'model.dart';
 import 'safe_screen.dart';
 import 'repository.dart';
 import 'AllergyAssistance.dart';
 
-void main() => runApp(const MyApp());
+main() async {
+  await GetStorage.init();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -52,7 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
   late int _currentIndex = 0;
   final TextEditingController _textFieldController = TextEditingController();
   final List<Allergen> _allergens = <Allergen>[];
+  List<String> AllergensList = <String>[];
   Future<data>? _dataModel;
+
+  final box = GetStorage();
 
   /// Widget
   @override
@@ -100,11 +107,42 @@ class _MyHomePageState extends State<MyHomePage> {
                             Container(
                               alignment: Alignment.bottomRight,
                               padding: EdgeInsets.all(20),
-                              child: FloatingActionButton(
-                                  onPressed: () => _displayDialog(),
-                                  backgroundColor: Colors.orange,
-                                  tooltip: 'Add Item',
-                                  child: const Icon(Icons.add)),
+                              child: Row(
+                                children: [
+                                  //Add button for allergens
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: FloatingActionButton(
+                                        onPressed: () => _displayDialog(),
+                                        backgroundColor: Colors.orange,
+                                        tooltip: 'Add Item',
+                                        child: const Icon(Icons.add)),
+                                  ),
+                                  //Save button for allergens
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: FloatingActionButton(
+                                      onPressed: () {
+                                        for (var item in _allergens) {
+                                          AllergensList.add(item.name);
+                                        }
+                                        print(AllergensList);
+                                        box.write('list', AllergensList);
+                                      },
+                                      child: const Text(
+                                        'Save',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontStyle: FontStyle.normal,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            fontFamily: 'Raleway'),
+                                      ),
+                                      backgroundColor: Colors.amber,
+                                    ),
+                                  )
+                                ],
+                              ),
                             )
                           ],
                         ),
@@ -127,8 +165,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         SliderButton(
                                           action: () async {
                                             setState(() {
-                                              _dataModel = getData(
-                                                  image_string, _currentIndex);
+                                              _dataModel = getData(image_string,
+                                                  _currentIndex, AllergensList);
                                             });
                                           },
                                           label: Text("Upload now",
@@ -200,6 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   SliderButton(
                                     action: () {
                                       _getFromGallery();
+                                      print(box.read('list'));
                                     },
                                     label: Text("From Gallery",
                                         textAlign: TextAlign.center,
@@ -422,6 +461,5 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       allergen.checked = !allergen.checked;
     });
-  } // Other functions
-
+  }
 }
