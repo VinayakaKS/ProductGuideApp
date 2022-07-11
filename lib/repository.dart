@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<data> getData(String imageString, int products, List allergens) async {
-  final response = await http.post(Uri.parse('http://10.20.25.178:5000/'),
+  final response = await http.post(Uri.parse('http://10.20.61.191:5000/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8'
       },
